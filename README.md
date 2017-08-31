@@ -1,2 +1,4 @@
 # nfc-tag
-An nfc tag game/scavanger hunt
+A free, open-source exploration / scavenger-hunt system utilizing cheap, easy-to-set-up NFC tags.
+
+See GOALS.md for project goals.
