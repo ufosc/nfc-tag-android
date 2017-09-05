@@ -41,11 +41,33 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@android:color/holo_orange_dark"
-                    android:text="Short Name"
+                    android:text="Tag Name"
                     android:textColor="@android:color/background_light" />
 
                 <TextView
                     android:id="@+id/shortNameTView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/colorPrimaryDark"
+                    android:textColor="@android:color/background_light" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="10dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/usernameView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/holo_orange_dark"
+                    android:text="Scanned By"
+                    android:textColor="@android:color/background_light" />
+
+                <TextView
+                    android:id="@+id/userNameTView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@color/colorPrimaryDark"
@@ -71,6 +93,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@color/colorPrimaryDark"
+                    android:fontFamily="monospace"
                     android:textColor="@android:color/background_light" />
             </LinearLayout>
 
@@ -93,6 +116,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@color/colorPrimaryDark"
+                    android:fontFamily="monospace"
                     android:textColor="@android:color/background_light" />
             </LinearLayout>
 
@@ -115,6 +139,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@color/colorPrimaryDark"
+                    android:fontFamily="monospace"
                     android:textColor="@android:color/background_light" />
             </LinearLayout>
 
@@ -137,6 +162,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@color/colorPrimaryDark"
+                    android:fontFamily="monospace"
                     android:textColor="@android:color/background_light" />
             </LinearLayout>
 
@@ -159,6 +185,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@color/colorPrimaryDark"
+                    android:fontFamily="monospace"
                     android:textColor="@android:color/background_light" />
             </LinearLayout>
 
