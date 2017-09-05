@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">GatorTag</string>
+    <string name="scan_name">Scan Tag</string>
+    <string name="write_name">Write New Tag</string>
+    <string name="scan_ready">Ready to Scan</string>
+    <string name="hold_device">Hold Device Against NFC Tag and Wait</string>
+</resources>

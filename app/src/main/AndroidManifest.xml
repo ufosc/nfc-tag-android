@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.ufosc.gatortag">
+
+    <uses-permission android:name="android.permission.NFC" />
+    <uses-feature android:name="android.hardware.nfc" android:required="true" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/gatortag_logo_orange"
+        android:label="@string/app_name"
+        android:roundIcon="@drawable/gatortag_logo_orange"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+
+        <activity android:name="org.ufosc.gatortag.MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name="org.ufosc.gatortag.ScanActivity" >
+            <intent-filter>
+                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="gatortag/code" />
+                <data android:mimeType="gatortag/name" />
+                <data android:mimeType="gatortag/id" />
+                <data android:mimeType="gatortag/time" />
+            </intent-filter>
+        </activity>
+
+    </application>
+
+</manifest>
