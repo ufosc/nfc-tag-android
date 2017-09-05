@@ -14,7 +14,7 @@ The tag should be formatted with an Ndef data structure, divided into the follow
 ### ID
 * Type: gatortag/id
 * Size: 64 bytes
-* Contents: A unique, random identifier for the tag. Not to be confused with the "Code" section, below; unlike the code, the ID number is *public*, and should be made available on the server.
+* Contents: A unique, random identifier for the tag. Not to be confused with the "Code" section, below; unlike the code, the ID number is **public**, and should be made available on the server.
 
 ### Encoding Time
 * Type: gatortag/time
@@ -25,4 +25,4 @@ The tag should be formatted with an Ndef data structure, divided into the follow
 ### Code
 * Type: gatortag/code
 * Size: 512 bytes
-* Contents: A random number that is unique to the tag. Unlike the ID number, this number should be *secret*; it is used to prove to the server that a person has been to the tag.
+* Contents: A random number that is unique to the tag. Unlike the ID number, this number should be **secret**; it is used to prove to the server that a person has been to the tag.
