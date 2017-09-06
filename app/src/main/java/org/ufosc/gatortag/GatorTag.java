@@ -34,6 +34,22 @@ public final class GatorTag {
         return new String(_scannerUserNameRaw);
     }
 
+    public String getTagName(){
+        return new String(_shortNameRaw);
+    }
+
+    public long getUid(){
+        return decodeLong(_uidRaw);
+    }
+
+    public long getTimestamp(){
+        return decodeLong(_createTimestampRaw);
+    }
+
+    public byte[] getHash(){
+        return calculateHash();
+    }
+
 
 
     /**
@@ -42,7 +58,7 @@ public final class GatorTag {
      *
      * @return the hash of the tag
      */
-    public final byte[] calculateHash(){
+    private final byte[] calculateHash(){
         try {
             MessageDigest hashCalcer = MessageDigest.getInstance("SHA-256");
             hashCalcer.update(_serialNumber);
@@ -84,5 +100,24 @@ public final class GatorTag {
         }
 
         return converted;
+    }
+
+    /**
+     * Creates a formatted string from the given byte[]
+     *
+     * @param toDump the byte[] to convert
+     * @return the String converted from toDump
+     */
+    public static String dumpByteArray(byte[] toDump){
+        String outString = "";
+        for(int i = 0; i < toDump.length; i++){
+            int posDig = toDump[i] + 128;
+            outString += (posDig < 16 ? "0" : "") + Integer.toHexString(posDig) + " ";
+            if((i+1) % 16 == 0 && i != toDump.length - 1){
+                outString += "\n";
+            }
+        }
+
+        return outString;
     }
 }

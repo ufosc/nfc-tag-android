@@ -4,6 +4,8 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+// Not yet fully implemented.
+
 public class TagDataStoreOpenHelper extends SQLiteOpenHelper{
     private static final String createCommand = "CREATE DATABASE "
             + SQLTagDataStore.DATABASE_NAME + " ( "

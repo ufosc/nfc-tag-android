@@ -4,6 +4,8 @@ package org.ufosc.gatortag;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
+// Not yet fully implemented.
+
 public class SQLTagDataStore {
     public static final String DATABASE_NAME = "gatortagTagStore";
     public static final String KEY_SERIAL_NUMBER = "tagSerialNumber";
@@ -22,6 +24,6 @@ public class SQLTagDataStore {
         tagBase = openHelper.getWritableDatabase();
     }
 
-    public boolean putTag()
+    // public boolean putTag()
 
 }
