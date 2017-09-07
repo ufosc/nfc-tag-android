@@ -4,4 +4,13 @@
     <string name="write_name">Write New Tag</string>
     <string name="scan_ready">Ready to Scan</string>
     <string name="hold_device">Hold Device Against NFC Tag and Wait</string>
+    <string name="tag_name">Tag Name</string>
+    <string name="enter_name">Enter a Name</string>
+    <string name="write_tag">Write Tag</string>
+    <string name="username">Your Username</string>
+    <string name="hash">Tag Hash</string>
+    <string name="serial_number">Serial Number</string>
+    <string name="uid">Tag UID</string>
+    <string name="secret_code">Tag Secret Code</string>
+    <string name="place_time">Timestamp of Placement</string>
 </resources>

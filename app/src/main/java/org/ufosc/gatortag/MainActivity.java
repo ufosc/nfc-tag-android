@@ -12,10 +12,10 @@ import android.view.View;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
-    NfcAdapter nAdapt;
-    IntentFilter[] intentFiltersArray;
-    String[][] techListsArray;
-    PendingIntent nfcCatcher;
+    private NfcAdapter nAdapt;
+    private IntentFilter[] intentFiltersArray;
+    private String[][] techListsArray;
+    private PendingIntent nfcCatcher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
         nAdapt.disableForegroundDispatch(this);
     }
 
+    @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         if (intent != null && NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction())) {
@@ -69,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void clickWriteButton(View v){
-        //startActivityForResult(new Intent(this, WriteActivity.class), 0);
+        startActivity(new Intent(this, WriteActivity.class));
     }
 
 }

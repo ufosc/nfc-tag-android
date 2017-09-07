@@ -1,53 +1,90 @@
 package org.ufosc.gatortag;
 
 
+import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
-public final class GatorTag {
+final class GatorTag {
     private final byte[] _scannerUserNameRaw;
     private final byte[] _uidRaw;
-    private final byte[] _serialNumber;
-    private final byte[] _secretCode;
     private final byte[] _shortNameRaw;
     private final byte[] _createTimestampRaw;
+    private final byte[] _hash;
 
-    public GatorTag(String userName, long uid, byte[] serialNumber, byte[] secretCode, String shortName, long createTimestamp){
+    /**
+     * Constructs a GatorTag
+     * @param userName the name of the user that scanned / created the tag
+     * @param uid the UID of the tag (NOT the serial number)
+     * @param serialNumber the serial number of the tag (NOT the UID)
+     * @param secretCode the random "secret code" byte array of the tag
+     * @param shortName the short name stored on the tag
+     * @param createTimestamp the UNIX timestamp of the tag's creation
+     */
+    GatorTag(String userName, long uid, byte[] serialNumber, byte[] secretCode, String shortName, long createTimestamp){
         _scannerUserNameRaw = userName.getBytes();
         _uidRaw = encodeLong(uid);
-        _serialNumber = serialNumber;
-        _secretCode = secretCode;
         _shortNameRaw = shortName.getBytes();
         _createTimestampRaw = encodeLong(createTimestamp);
+
+        _hash = calculateHash(serialNumber, _uidRaw, secretCode, _scannerUserNameRaw);
     }
 
-    public GatorTag(byte[] userNameRaw, byte[] uidRaw, byte[] serialNumber, byte[] secretCode, byte[] shortNameRaw, byte[] createTimestampRaw){
+    /**
+     * Constructs a GatorTag from raw values
+     * @param userNameRaw the name of the user that scanned / created the tag
+     * @param uidRaw the UID of the tag (NOT the serial number)
+     * @param serialNumber the serial number of the tag (NOT the UID)
+     * @param secretCode the random "secret code" byte array of the tag
+     * @param shortNameRaw the short name stored on the tag
+     * @param createTimestampRaw the UNIX timestamp of the tag's creation
+     */
+    GatorTag(byte[] userNameRaw, byte[] uidRaw, byte[] serialNumber, byte[] secretCode, byte[] shortNameRaw, byte[] createTimestampRaw){
         _scannerUserNameRaw = userNameRaw;
         _uidRaw = uidRaw;
-        _serialNumber = serialNumber;
-        _secretCode = secretCode;
         _shortNameRaw = shortNameRaw;
         _createTimestampRaw = createTimestampRaw;
+
+        _hash = calculateHash(serialNumber, uidRaw, secretCode, userNameRaw);
     }
 
-    public String getUserName(){
+    String getUserName(){
         return new String(_scannerUserNameRaw);
     }
 
-    public String getTagName(){
+    byte[] getUserNameRaw(){
+        return _scannerUserNameRaw;
+    }
+
+    String getTagName(){
         return new String(_shortNameRaw);
     }
 
-    public long getUid(){
+    byte[] getTagNameRaw(){
+        return _shortNameRaw;
+    }
+
+    long getUid(){
         return decodeLong(_uidRaw);
     }
 
-    public long getTimestamp(){
+    byte[] getUidRaw(){
+        return _uidRaw;
+    }
+
+    long getTimestamp(){
         return decodeLong(_createTimestampRaw);
     }
 
-    public byte[] getHash(){
-        return calculateHash();
+    byte[] getTimestampRaw(){
+        return _createTimestampRaw;
+    }
+
+    byte[] getHash(){
+        return _hash;
     }
 
 
@@ -58,13 +95,13 @@ public final class GatorTag {
      *
      * @return the hash of the tag
      */
-    private final byte[] calculateHash(){
+    private final byte[] calculateHash(byte[] serialNumber, byte[] uidRaw, byte[] secretCode, byte[] userNameRaw){
         try {
             MessageDigest hashCalcer = MessageDigest.getInstance("SHA-256");
-            hashCalcer.update(_serialNumber);
-            hashCalcer.update(_uidRaw);
-            hashCalcer.update(_secretCode);
-            hashCalcer.update(_scannerUserNameRaw);
+            hashCalcer.update(serialNumber);
+            hashCalcer.update(uidRaw);
+            hashCalcer.update(secretCode);
+            hashCalcer.update(userNameRaw);
 
             return hashCalcer.digest();
         }catch (NoSuchAlgorithmException e){
@@ -79,12 +116,9 @@ public final class GatorTag {
      */
     private final byte[] encodeLong(long l){
         int longLen = Long.SIZE/Byte.SIZE;
-        byte[] encoded = new byte[longLen];
-        for(int i = 0; i < encoded.length; i++){
-            encoded[i] = (byte)((l >> longLen * i) % 256);
-        }
-
-        return encoded;
+        ByteBuffer buf = ByteBuffer.allocate(longLen);
+        buf.putLong(l);
+        return buf.array();
     }
 
     /**
@@ -94,12 +128,17 @@ public final class GatorTag {
      * @return the long converted from b
      */
     private final long decodeLong(byte[] b){
-        long converted = 0;
-        for(int i = 0; i < b.length; i++){
-            converted += (long)(b[i]) << 8*i;
-        }
+        int longLen = Long.SIZE/Byte.SIZE;
+        ByteBuffer buf = ByteBuffer.allocate(longLen);
+        buf.put(b);
+        buf.flip();
+        return buf.getLong();
+    }
 
-        return converted;
+    final String formatTimestamp(){
+        Date d = new Date(decodeLong(_createTimestampRaw) * 1000L);
+        DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return formatter.format(d);
     }
 
     /**
@@ -108,7 +147,7 @@ public final class GatorTag {
      * @param toDump the byte[] to convert
      * @return the String converted from toDump
      */
-    public static String dumpByteArray(byte[] toDump){
+    static String dumpByteArray(byte[] toDump){
         String outString = "";
         for(int i = 0; i < toDump.length; i++){
             int posDig = toDump[i] + 128;

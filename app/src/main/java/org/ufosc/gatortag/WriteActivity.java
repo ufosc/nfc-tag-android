@@ -1,24 +1,32 @@
 package org.ufosc.gatortag;
 
-import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.nfc.FormatException;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.Ndef;
 import android.nfc.tech.NdefFormatable;
+import android.nfc.tech.TagTechnology;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.io.IOException;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Random;
 
-public class ScanActivity extends AppCompatActivity {
+public class WriteActivity extends AppCompatActivity{
+    private String _tagName;
+    private boolean _isNameSet;
     private NfcAdapter nAdapt;
     private IntentFilter[] intentFiltersArray;
     private String[][] techListsArray;
@@ -27,7 +35,10 @@ public class ScanActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle saveState){
         super.onCreate(saveState);
-        setContentView(R.layout.activity_scan);
+        _tagName = "";
+        _isNameSet = false;
+
+        setContentView(R.layout.activity_create);
         nfcCatcher = PendingIntent.getActivity(
                 this,
                 0,
@@ -37,10 +48,7 @@ public class ScanActivity extends AppCompatActivity {
         IntentFilter nfcFilter = new IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED);
 
         try{
-            nfcFilter.addDataType("gatortag/code");
-            nfcFilter.addDataType("gatortag/id");
-            nfcFilter.addDataType("gatortag/time");
-            nfcFilter.addDataType("gatortag/name");
+            nfcFilter.addDataType("*/*");
         }catch(IntentFilter.MalformedMimeTypeException e){
             throw new RuntimeException("Error creating filters for NFC catcher.");
         }
@@ -53,6 +61,7 @@ public class ScanActivity extends AppCompatActivity {
         };
 
         nAdapt = NfcAdapter.getDefaultAdapter(this);
+
     }
 
     @Override
@@ -67,74 +76,69 @@ public class ScanActivity extends AppCompatActivity {
         nAdapt.disableForegroundDispatch(this);
     }
 
-    @Override
-    protected void onNewIntent(Intent intent){
-        super.onNewIntent(intent);
-        if(intent != null && NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction())){
-            Tag newTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+    public void clickWrite(View v){
+        final EditText nameInput = (EditText) findViewById(R.id.nameBox333);
 
-            Parcelable[] rawMessages =
-                    intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
-
-            if(rawMessages == null){
-                return;
-            }
-
-            NdefMessage[] gaMessages = new NdefMessage[rawMessages.length];
-
-            for(int i = 0; i < rawMessages.length; i++){
-                gaMessages[i] = (NdefMessage) rawMessages[i];
-            }
-
-            for(int i = 0; i < gaMessages.length; i++){
-                processGatortag(newTag, gaMessages[i]);
-            }
-        }
-    }
-
-    /**
-     * Processes the contents of a tag, and displays a result screen.
-     *
-     * @param gaTag the tag which was scanned
-     * @param gaData the message that was retrieved from the tag
-     */
-    private void processGatortag(Tag gaTag, NdefMessage gaData){
-        NdefRecord[] records = gaData.getRecords();
-        if(records == null){
+        String nameResult = nameInput.getText().toString();
+        if(nameResult.equals("")){
+            Toast.makeText(getApplicationContext(), "Please enter a name.", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        String name = "Error: No Name Field Found";
-        String username = "Placeholder User";
-        byte[] uidRaw = {};
-        byte[] serialNumber = gaTag.getId();
-        byte[] code = {};
-        byte[] timeRaw = {};
+        _tagName = nameResult;
+        _isNameSet = true;
 
-        for(int i = 0; i < records.length; i++){
-            if(records[i].toMimeType().equals("gatortag/name")){
-                name = new String(records[i].getPayload());
-            }else if(records[i].toMimeType().equals("gatortag/id")){
-                uidRaw = records[i].getPayload();
-            }else if(records[i].toMimeType().equals("gatortag/code")){
-                code = records[i].getPayload();
-            }else if(records[i].toMimeType().equals("gatortag/time")){
-                timeRaw = records[i].getPayload();
-            }
+        setContentView(R.layout.activity_scan);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent){
+        super.onNewIntent(intent);
+        if(intent != null && NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction()) && _isNameSet){
+            Tag newTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+
+            Ndef tagNdef = Ndef.get(newTag);
+
+            GatorTag result = generateTag(_tagName, "Placeholder User", tagNdef);
         }
+    }
 
-        GatorTag tag = new GatorTag(username.getBytes(), uidRaw, serialNumber, code, name.getBytes(), timeRaw);
+    public GatorTag generateTag(String tagName, String writerUsername, Ndef tagToWrite){
+        Random r = new Random();
+        long genUid = r.nextLong();
+        byte[] foundSNum = tagToWrite.getTag().getId();
+        byte[] code = new byte[512];
+        r.nextBytes(code);
+        long timestamp = Calendar.getInstance().getTimeInMillis() / 1000L;
 
-        displayResult(tag);
+        GatorTag res = new GatorTag(writerUsername, genUid, foundSNum, code, tagName, timestamp);
+        writeToTag(res, code, tagToWrite);
 
+        return null;
+    }
+
+    private void writeToTag(GatorTag dataToWrite, byte[] secretCode, Ndef tag){
+        NdefRecord[] records = new NdefRecord[4];
+        records[0] = NdefRecord.createMime("gatortag/name", dataToWrite.getTagNameRaw());
+        records[1] = NdefRecord.createMime("gatortag/id", dataToWrite.getUidRaw());
+        records[2] = NdefRecord.createMime("gatortag/time", dataToWrite.getTimestampRaw());
+        records[3] = NdefRecord.createMime("gatortag/code", secretCode);
+
+        NdefMessage toWrite = new NdefMessage(records);
+        WritePair writeOperation = new WritePair(toWrite, tag);
+
+        new AsyncWriteTask(getApplicationContext()).doInBackground(writeOperation);
+
+        displayResult(dataToWrite, secretCode, tag);
     }
 
     /**
      * Brings up a view to show the information read from a tag.
+     * Yes, I just copied this from ScanActivity.java. I'll fix it later.
      *
      * @param tag the GatorTag object to display
      */
-    private void displayResult(GatorTag tag){
+    private void displayResult(GatorTag tag, byte[] code, Ndef actualTag){
         setContentView(R.layout.activity_result);
 
         final TextView nameField = (TextView) findViewById(R.id.shortNameTView);
@@ -148,8 +152,8 @@ public class ScanActivity extends AppCompatActivity {
         nameField.setText(tag.getTagName());
         userNField.setText(tag.getUserName());
         idField.setText(Long.toString(tag.getUid()));
-        serNumField.setText("--Not available--");
-        codeField.setText("--Not available--");
+        serNumField.setText(GatorTag.dumpByteArray(actualTag.getTag().getId()));
+        codeField.setText(GatorTag.dumpByteArray(code));
         timeField.setText(tag.formatTimestamp());
         hashField.setText(GatorTag.dumpByteArray(tag.getHash()));
     }

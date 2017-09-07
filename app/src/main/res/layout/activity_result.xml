@@ -41,7 +41,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@android:color/holo_orange_dark"
-                    android:text="Tag Name"
+                    android:text="@string/tag_name"
                     android:textColor="@android:color/background_light" />
 
                 <TextView
@@ -63,7 +63,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@android:color/holo_orange_dark"
-                    android:text="Scanned By"
+                    android:text="@string/username"
                     android:textColor="@android:color/background_light" />
 
                 <TextView
@@ -85,7 +85,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@android:color/holo_orange_dark"
-                    android:text="Hash"
+                    android:text="@string/hash"
                     android:textColor="@android:color/background_light" />
 
                 <TextView
@@ -104,11 +104,34 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/textView5"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/holo_orange_dark"
+                    android:text="@string/serial_number"
+                    android:textColor="@android:color/background_light" />
+
+                <TextView
+                    android:id="@+id/serNumTView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/colorPrimaryDark"
+                    android:fontFamily="monospace"
+                    android:textColor="@android:color/background_light" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="10dp"
+                android:orientation="vertical">
+
+                <TextView
                     android:id="@+id/textView7"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@android:color/holo_orange_dark"
-                    android:text="UID"
+                    android:text="@string/uid"
                     android:textColor="@android:color/background_light" />
 
                 <TextView
@@ -127,11 +150,34 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/textView9"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/holo_orange_dark"
+                    android:text="@string/secret_code"
+                    android:textColor="@android:color/background_light" />
+
+                <TextView
+                    android:id="@+id/sCodeTView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/colorPrimaryDark"
+                    android:fontFamily="monospace"
+                    android:textColor="@android:color/background_light" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="10dp"
+                android:orientation="vertical">
+
+                <TextView
                     android:id="@+id/textView11"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@android:color/holo_orange_dark"
-                    android:text="Placement Time"
+                    android:text="@string/place_time"
                     android:textColor="@android:color/background_light" />
 
                 <TextView

@@ -30,6 +30,10 @@
                 <data android:mimeType="gatortag/time" />
             </intent-filter>
         </activity>
+        <activity android:name="org.ufosc.gatortag.WriteActivity">
+
+        </activity>
+
 
     </application>
 
